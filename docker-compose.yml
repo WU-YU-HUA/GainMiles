@@ -1,0 +1,33 @@
+services:
+  db:
+    image: postgres:latest
+    container_name: postgres
+    environment:
+      POSTGRES_USER: harry
+      POSTGRES_PASSWORD: harry0210
+      POSTGRES_DB: database
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  django:
+    build: .
+    container_name: django
+    volumes:
+      - ./:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    environment:
+      - DB_NAME=database
+      - DB_USER=harry
+      - DB_PASSWORD=harry0210
+      - DB_HOST=db
+      - DB_PORT=5432
+    entrypoint: ["/bin/sh", "-c"]
+    command: ["chmod +x /app/migrate.sh && /app/migrate.sh"]
+
+volumes:
+  pgdata:
